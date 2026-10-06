@@ -29,7 +29,8 @@
     "ws": "^8.21.0",
     "webpack": "^5.76.0",
     "websocket-driver": "^0.7.5",
-    "webpack-dev-middleware": "^7.4.6"
+    "webpack-dev-middleware": "^7.4.6",
+    "svgo": "2.8.4"
   },
   "scripts": {
     "start": "react-scripts start",
