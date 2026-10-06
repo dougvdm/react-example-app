@@ -2,9 +2,12 @@ name: CI
 
 on:
   push:
-    branches: [main, master, develop]
+    branches:
+      - master
+      - 'test/**'
   pull_request:
-    branches: [main, master]
+    branches:
+      - master
 
 jobs:
   # -------------------------------------------------------------
@@ -20,14 +23,13 @@ jobs:
       - name: Executar Testes
         run: |
           echo "Executando suite de testes..."
-          # Adicione aqui os comandos do seu projeto (ex: npm test, pytest, etc.)
 
   # -------------------------------------------------------------
-  # JOB 2: Segurança (Só roda se o JOB 1 passar)
+  # JOB 2: Análise de Segurança (DevSecOps)
   # -------------------------------------------------------------
   security-scan:
     name: 🛡️ DevSecOps (SAST Semgrep & Container Trivy)
-    needs: [lint-and-test] # Depende do sucesso do job acima
+    needs: [lint-and-test] # Só inicia após o sucesso do lint-and-test
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -37,7 +39,9 @@ jobs:
       - name: 📥 Checkout do Código
         uses: actions/checkout@v4
 
-      # ETAPA 1: SAST Semgrep
+      # -------------------------------------------------------------
+      # ETAPA 1: SAST - Análise Estática de Código com Semgrep
+      # -------------------------------------------------------------
       - name: 🔍 SAST com Semgrep (Regras OWASP Top 10)
         uses: semgrep/semgrep-action@v1
         with:
@@ -46,12 +50,16 @@ jobs:
             p/security-audit
           auditOn: push
 
-      # ETAPA 2: Build da Imagem Docker
+      # -------------------------------------------------------------
+      # ETAPA 2: Build da Imagem de Teste Local
+      # -------------------------------------------------------------
       - name: 🐳 Compilar Imagem Docker Efêmera para Análise
         run: |
           docker build -t app-audit:local .
 
-      # ETAPA 3: Scanner Trivy
+      # -------------------------------------------------------------
+      # ETAPA 3: Scanner de Vulnerabilidades de Imagem com Trivy
+      # -------------------------------------------------------------
       - name: 🛡️ Escanear Imagem Docker com Aqua Security Trivy
         uses: aquasecurity/trivy-action@0.28.0
         with:
