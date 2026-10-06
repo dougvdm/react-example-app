@@ -10,9 +10,6 @@ on:
       - master
 
 jobs:
-  # -------------------------------------------------------------
-  # JOB 1: Testes e Validação
-  # -------------------------------------------------------------
   lint-and-test:
     name: 🧪 Validação & Testes
     runs-on: ubuntu-latest
@@ -24,12 +21,9 @@ jobs:
         run: |
           echo "Executando suite de testes..."
 
-  # -------------------------------------------------------------
-  # JOB 2: Análise de Segurança (DevSecOps)
-  # -------------------------------------------------------------
   security-scan:
     name: 🛡️ DevSecOps (SAST Semgrep & Container Trivy)
-    needs: [lint-and-test] # Só inicia após o sucesso do lint-and-test
+    needs: [lint-and-test]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -39,9 +33,6 @@ jobs:
       - name: 📥 Checkout do Código
         uses: actions/checkout@v4
 
-      # -------------------------------------------------------------
-      # ETAPA 1: SAST - Análise Estática de Código com Semgrep
-      # -------------------------------------------------------------
       - name: 🔍 SAST com Semgrep (Regras OWASP Top 10)
         uses: semgrep/semgrep-action@v1
         with:
@@ -50,18 +41,12 @@ jobs:
             p/security-audit
           auditOn: push
 
-      # -------------------------------------------------------------
-      # ETAPA 2: Build da Imagem de Teste Local
-      # -------------------------------------------------------------
       - name: 🐳 Compilar Imagem Docker Efêmera para Análise
         run: |
           docker build -t app-audit:local .
 
-      # -------------------------------------------------------------
-      # ETAPA 3: Scanner de Vulnerabilidades de Imagem com Trivy
-      # -------------------------------------------------------------
       - name: 🛡️ Escanear Imagem Docker com Aqua Security Trivy
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@master
         with:
           image-ref: 'app-audit:local'
           format: 'table'
