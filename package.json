@@ -22,6 +22,13 @@
     "sweetalert2": "^11.12.1",
     "web-vitals": "^2.1.4"
   },
+  "overrides": {
+    "http-proxy-middleware": "^2.0.7",
+    "ip-address": "^10.3.1",
+    "form-data": "^4.0.6",
+    "ws": "^8.21.0",
+    "webpack": "^5.76.0"
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
